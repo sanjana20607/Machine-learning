@@ -1,0 +1,43 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans, DBSCAN
+from sklearn.metrics import silhouette_score, davies_bouldin_score
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
+
+iris = load_iris()
+data = iris.data
+labels = iris.target
+
+scaler = StandardScaler()
+data_std = scaler.fit_transform(data)
+
+def plot_clusters(data, labels, title):
+    plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis', edgecolors='k', s=50)
+    plt.title(title)
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.show()
+
+def evaluate_clustering(data, algorithm, labels):
+    silhouette = silhouette_score(data, labels)
+    davies_bouldin = davies_bouldin_score(data, labels)
+    print(f"Silhouette Score: {silhouette}")
+    print(f"Davies-Bouldin Index: {davies_bouldin}")
+
+kmeans = KMeans(n_clusters=3, random_state=42)
+kmeans_labels = kmeans.fit_predict(data_std)
+
+plot_clusters(data_std, kmeans_labels, "K-Means Clustering")
+
+print("K-Means Clustering Evaluation:")
+evaluate_clustering(data_std, kmeans, kmeans_labels)
+
+dbscan = DBSCAN(eps=0.5, min_samples=5)
+dbscan_labels = dbscan.fit_predict(data_std)
+
+plot_clusters(data_std, dbscan_labels, "DBSCAN Clustering")
+
+print("DBSCAN Clustering Evaluation:")
+evaluate_clustering(data_std, dbscan, dbscan_labels)
